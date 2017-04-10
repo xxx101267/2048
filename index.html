@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		#div1 {
+			margin: 100px auto 0;
+			width: 450px;
+			height: 450px;
+			border: 1px solid #000;
+		}
+		#div1 div {
+			margin: 10px 0 0 10px;
+			width: 100px;
+			height: 100px;
+			float: left;
+			background: #ccc;
+			font-size: 60px;
+			line-height: 100px;
+			text-align: center;
+			font-weight: bold;
+
+			animation-iteration-count: 1;
+			animation-duration: .3s;
+			/*animation-name: 'miaov';*/
+		}
+
+		@keyframes miaov {
+			50% {font-size: 80px;background:red;}
+			100% {font-size: 60px;background:#ccc;}
+		}
+	</style>
+	<script type="text/javascript">
+		
+		//根据行或列的数字arr 进行算法 /返回值：计算后的数组
+		function _2048(arr) {
+
+			var newArr = [];//新数组 用来存新生成的数字
+
+			for (var i=arr.length-1; i>=0; ) {
+				var a = arr[i];//获取第一个数字
+				
+				//第一个数字情况1，为0时
+				if (a == 0) {
+					i--;
+					continue;
+				} else {
+				//第一个数字情况2，不为0时
+					i--;//继续查找上一个
+					var b = 0;//默认上一个的初始值为0
+					while (b == 0 && i >= 0) {
+						b = arr[i];
+						if (i >= 0) {
+							i--;
+						} else {
+							break;
+						}
+					}
+					
+					
+					if (b == 0) {//第二个数字情况1：为0时--只添加第一个数字a 
+						newArr.push(a);
+						break;
+					} else if (a == b) {//第二个数字情况2：相等时--相加
+						newArr.push(a + b);
+					} else {//第二个数字情况3：不相等时--只添加第一个数字a 
+						newArr.push(a);
+						i++;
+					}
+
+				}
+
+			}
+			
+			//补0
+			for (var i=0; i<4; i++) {
+				newArr[i] = newArr[i] || 0;
+			}
+			//补0后倒序
+			return newArr.reverse();
+		}
+
+		// var result = _2048([0,4,0,4]);
+		// console.log(result)
+		
+		//页面加载后
+		window.onload = function() {
+
+			var divs = document.querySelectorAll("#div1 div");
+
+			function todo(a, b, c, d) {
+				
+				//一行或一列的4个格子的数字数组
+				var arr = [
+					Number(divs[a].innerHTML),
+					Number(divs[b].innerHTML),
+					Number(divs[c].innerHTML),
+					Number(divs[d].innerHTML)
+				];
+				
+				//根据行或列的数字arr 进行算法 /返回值：计算后的数组
+				var newArr = _2048(arr);
+				
+				//将一列或一行的数组数组赋值给innerHTML
+				divs[a].innerHTML = newArr[0] || '';
+				divs[b].innerHTML = newArr[1] || '';
+				divs[c].innerHTML = newArr[2] || '';
+				divs[d].innerHTML = newArr[3] || '';
+				
+				//动画效果
+				if (newArr[0]) {
+					divs[a].style.animationName = 'miaov';
+				}
+				if (newArr[1]) {
+					divs[b].style.animationName = 'miaov';
+				}
+				if (newArr[2]) {
+					divs[c].style.animationName = 'miaov';
+				}
+				if (newArr[3]) {
+					divs[d].style.animationName = 'miaov';
+				}
+			}
+			
+			//在空的位置随机生成数字2
+			function random2() {
+				//获取到divs中是空格的div
+				var arr = [];
+				for (var i=0; i<divs.length; i++) {
+					if (divs[i].innerHTML == '') {
+						arr.push(divs[i]);
+					}
+				}
+				
+				//随机生成数字2
+				arr.sort(function() {
+					return 0.5 - Math.random();
+				});
+				arr[0].innerHTML = 2;
+			}
+
+			random2();
+			
+			//动画效果
+			for (var i=0; i<divs.length; i++) {
+				divs[i].addEventListener("animationend", function() {
+						this.style.animationName = '';
+				}, false);
+			}
+			
+			//键盘按键时
+			document.onkeydown = function(e) {
+
+				switch(e.which) {//e.which  标准下可以用    /也可用e.keycode
+
+					case 37:
+						todo(3,2,1,0);
+						todo(7,6,5,4);
+						todo(11,10,9,8);
+						todo(15,14,13,12);
+						random2();//每次按键合并后都紧跟着生成一个随机位置的2
+						break;
+
+					case 38:
+						todo(12,8,4,0);
+						todo(13,9,5,1);
+						todo(14,10,6,2);
+						todo(15,11,7,3);
+						random2();//每次按键合并后都紧跟着生成一个随机位置的2
+						break;
+
+					case 39:
+						todo(0,1,2,3);
+						todo(4,5,6,7);
+						todo(8,9,10,11);
+						todo(12,13,14,15);
+						random2();//每次按键合并后都紧跟着生成一个随机位置的2
+						break;
+
+					case 40:
+						todo(0,4,8,12);
+						todo(1,5,9,13);
+						todo(2,6,10,14);
+						todo(3,7,11,15);
+						random2();//每次按键合并后都紧跟着生成一个随机位置的2
+						break;
+
+				}
+
+			}
+
+
+		}
+
+	</script>
+</head>
+<body>
+	
+	<div id="div1">
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+	</div>
+
+</body>
+</html>
